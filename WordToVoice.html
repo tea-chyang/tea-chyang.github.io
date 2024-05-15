@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Text to Speech Example</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #e4f9f5; /* 淺綠色背景 */
+        color: #333333;
+        padding: 20px;
+    }
+
+    h1 {
+        color: #2c786c; /* 深綠色 */
+    }
+
+    #text-input {
+        width: 80%; /* 增大輸入框 */
+        height: 100px; /* 設定足夠的高度 */
+        margin-bottom: 10px;
+        padding: 10px;
+        font-size: 16px;
+        box-sizing: border-box;
+        border: 2px solid #2c786c;
+        border-radius: 5px;
+    }
+
+    #language-select, button {
+        padding: 10px 20px;
+        font-size: 16px;
+        color: #ffffff;
+        background-color: #2c786c; /* 深綠色按鈕 */
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background-color: #35a79c;
+    }
+
+    audio {
+        width: 80%; /* 音頻播放器的寬度 */
+        margin-top: 20px;
+    }
+</style>
+</head>
+<body>
+<h1>利用微軟Azure語音服務 文字轉語音</h1>
+<textarea id="text-input" placeholder="Enter text"></textarea> <!-- 改用 textarea 以容納多行文字 -->
+<select id="language-select">
+    <option value="en-US-JennyNeural">English</option>
+    <option value="zh-CN-XiaoxiaoNeural">中文</option>
+</select>
+<button onclick="textToSpeech()">Convert Text</button>
+<audio id="audio-playback" controls></audio>
+
+<script>
+    const subscriptionKey = '82aa1f491cef401e8cf07f16f70c1c00';
+    const region = 'eastus'; // 設定區域為 eastus
+
+async function textToSpeech() {
+    let text = document.getElementById('text-input').value;
+    let selectedVoice = document.getElementById('language-select').value;
+    let tokenResponse = await fetch(`https://${region}.api.cognitive.microsoft.com/sts/v1.0/issuetoken`, {
+        method: 'POST',
+        headers: {
+            'Ocp-Apim-Subscription-Key': subscriptionKey
+        }
+    });
+    let token = await tokenResponse.text();
+
+    let ttsResponse = await fetch(`https://${region}.tts.speech.microsoft.com/cognitiveservices/v1`, {
+        method: 'POST',
+        headers: {
+            'Authorization': 'Bearer ' + token,
+            'Content-Type': 'application/ssml+xml',
+            'X-Microsoft-OutputFormat': 'audio-16khz-128kbitrate-mono-mp3'
+        },
+        body: `<speak version='1.0' xml:lang='en-US'><voice xml:lang='en-US' xml:gender='Female' name='${selectedVoice}'>${text}</voice></speak>`
+    });
+
+    let audioUrl = URL.createObjectURL(await ttsResponse.blob());
+    document.getElementById('audio-playback').src = audioUrl;
+}
+</script>
+</body>
+</html>
