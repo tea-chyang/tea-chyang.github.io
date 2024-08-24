@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh-tw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>計算平面座標上兩點之間的距離</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f8ea; /* 浅绿色背景 */
+        }
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            background-color: #ffffff; /* 白色背景 */
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); /* 淡淡的阴影效果 */
+        }
+        input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc; /* 灰色边框 */
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #4caf50; /* 淡绿色按钮 */
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.3s ease; /* 平滑的过渡效果 */
+        }
+        button:hover {
+            background-color: #388e3c; /* 按钮悬停时的颜色 */
+        }
+        p#result {
+            margin-top: 10px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>计算平面坐标上两点之间的距离</h2>
+        <label for="x1">点1 X 坐标：</label>
+        <input type="number" id="x1">
+        <label for="y1">点1 Y 坐标：</label>
+        <input type="number" id="y1">
+        <label for="x2">点2 X 坐标：</label>
+        <input type="number" id="x2">
+        <label for="y2">点2 Y 坐标：</label>
+        <input type="number" id="y2">
+        <button onclick="calculateDistance()">计算距离</button>
+        <p id="result"></p>
+    </div>
+
+    <script>
+        function calculateDistance() {
+            var x1 = document.getElementById('x1').value;
+            var y1 = document.getElementById('y1').value;
+            var x2 = document.getElementById('x2').value;
+            var y2 = document.getElementById('y2').value;
+
+            var distance = Math.sqrt(Math.pow((x2 - x1), 2) + Math.pow((y2 - y1), 2));
+            document.getElementById('result').innerHTML = "两点之间的距离为：" + distance.toFixed(2);
+        }
+    </script>
+</body>
+</html>
