@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="zh-tw">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>北昌五忠抽籤轉盤</title>
+    <style>
+        body {
+            
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            height: 100vh;
+            font-family: Arial, sans-serif;
+        }
+
+        .wheel-container {
+            position: relative;
+            width: 800px;
+            height: 800px;
+        }
+
+        #wheel {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 5px solid #333;
+            position: absolute;
+            transform: rotate(0deg);
+            transition: transform 5s cubic-bezier(0.33, 1, 0.68, 1);
+        }
+
+        .arrow {
+
+
+            position: absolute;
+            top: 40%; /* 垂直中心 */
+
+
+            left: 100%;/* 置於轉盤右側 */
+
+
+            transform: translateX(-50%, -50%); /* 使指針垂直和水平居中 */
+
+
+            font-size: 5rem;
+            /* 增加指針大小 */
+
+
+            color: red;
+            /* 更改指針顏色 */
+            z-index: 10;
+            /* 確保指針在其他元素之上 */
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="wheel-container">
+        <div class="arrow">👈</div>
+        <canvas id="wheel" width="800" height="800"></canvas> <!-- 設定寬度和高度 -->
+    </div>
+
+    <button onclick="spin()">開始抽籤</button>
+
+    <script>
+        // 名單 - 你提供的29人名單
+        const names = [
+            "1 廖羿霏", "2 劉姮宇", "3 劉嘉恩", "4 曾安辰", "5 廖子寧",
+            "6 林昕恩", "7 王政棋", "8 陳彥翔", "9 林祈恩", "10 彭之妍",
+            "11 翁莞甯", "12 彭詩晴", "13 陳綺真", "14 謝彰鍵", "15 林芷伶",
+            "16 黃翊晴", "17 莊琬媛", "18 許哲齊", "19 沈宸逸", "20 陳俊安",
+            "21 葉芯妤", "22 郭采蓁", "23 柯詠瀚", "24 郭庭妤", "25 陳力宇",
+            "26 李尹旭", "27 邱偉倫", "28 武宸宇", "29 黃卉卉"
+        ];
+
+        const wheel = document.getElementById('wheel');
+        const ctx = wheel.getContext('2d');
+        const wheelRadius = wheel.width / 2;
+        let rotation = 0; // 初始化旋轉角度
+        let isSpinning = false; // 判斷是否正在旋轉
+        const colors = [];
+
+        function getRandomColor() {
+            // 產生隨機顏色
+            const letters = '0123456789ABCDEF';
+            let color = '#';
+            for (let i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
+
+        function drawWheel() {
+            const arcSize = (2 * Math.PI) / names.length;
+            ctx.clearRect(0, 0, wheel.width, wheel.height);
+            names.forEach((name, i) => {
+                const angle = i * arcSize;
+                const randomColor = getRandomColor();
+                colors.push(randomColor); // 保存顏色
+                ctx.beginPath();
+                ctx.fillStyle = randomColor;
+                ctx.moveTo(wheelRadius, wheelRadius);
+                ctx.arc(wheelRadius, wheelRadius, wheelRadius, angle, angle + arcSize);
+                ctx.lineTo(wheelRadius, wheelRadius);
+                ctx.fill();
+
+                // 在分區中顯示名稱
+                ctx.save();
+                ctx.translate(wheelRadius, wheelRadius);
+                ctx.rotate(angle + arcSize / 2);
+                ctx.textAlign = "right";
+                ctx.fillStyle = "#FFF";
+                ctx.font = 'bold 22px Arial'; // 字體大小調整
+                ctx.fillText(name, wheelRadius - 10, 10);
+                ctx.restore();
+            });
+        }
+
+        function spin() {
+            if (isSpinning) return; // 防止多次點擊
+
+            isSpinning = true; // 標記為旋轉中
+
+            const totalSpins = Math.floor(Math.random() * 5) + 5; // 隨機轉5-10圈
+            const finalAngle = Math.floor(Math.random() * 360); // 隨機最終角度
+            const totalAngle = totalSpins * 360 + finalAngle; // 總旋轉角度
+
+            rotation += totalAngle; // 更新旋轉角度
+            wheel.style.transform = `rotate(${rotation}deg)`;
+
+            const arcSize = 360 / names.length;
+            const selectedIndex = Math.floor((360 - (rotation % 360)) / arcSize) % names.length;
+
+            setTimeout(() => {
+                alert(`中籤的學生是: ${names[selectedIndex]}`);
+                isSpinning = false; // 重置旋轉狀態
+            }, 5000); // 等待動畫結束後顯示結果
+        }
+
+        window.onload = drawWheel;
+    </script>
+
+</body>
+
+</html>
